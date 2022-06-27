@@ -10,7 +10,7 @@ background_sky_orientation = Basis( 1.021, -0.064, 0.068, 0.095, 0.941, -0.057, 
 [node name="World" type="WorldEnvironment"]
 environment = SubResource( 1 )
 
-[node name="Node" type="Node2D" parent="."]
+[node name="Node" type="YSort" parent="."]
 
 [node name="Bush" parent="Node" instance=ExtResource( 1 )]
 position = Vector2( 96, 40 )

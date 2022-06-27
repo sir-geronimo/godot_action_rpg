@@ -210,10 +210,11 @@ blend_mode = 1
 
 [sub_resource type="AnimationNodeStateMachine" id=13]
 states/Idle/node = SubResource( 15 )
-states/Idle/position = Vector2( 527, 74 )
+states/Idle/position = Vector2( 527, 74.25 )
 states/Run/node = SubResource( 20 )
 states/Run/position = Vector2( 724, 74 )
 transitions = [ "Idle", "Run", SubResource( 25 ), "Run", "Idle", SubResource( 26 ) ]
+start_node = "Idle"
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=14]
 
@@ -227,14 +228,13 @@ __meta__ = {
 position = Vector2( 1, -8 )
 texture = ExtResource( 1 )
 hframes = 60
-frame = 11
+frame = 18
 
 [node name="Collision" type="CollisionShape2D" parent="."]
 rotation = 1.5708
 shape = SubResource( 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-autoplay = "IdleDown"
 anims/IdleDown = SubResource( 10 )
 anims/IdleLeft = SubResource( 9 )
 anims/IdleRight = SubResource( 7 )
@@ -250,5 +250,5 @@ tree_root = SubResource( 13 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/playback = SubResource( 14 )
-parameters/Idle/blend_position = Vector2( -0.000597715, 0.00795758 )
-parameters/Run/blend_position = Vector2( -0.00179321, -0.0185677 )
+parameters/Idle/blend_position = Vector2( 0, 0.1 )
+parameters/Run/blend_position = Vector2( 0, 0 )
