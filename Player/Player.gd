@@ -3,12 +3,14 @@ extends KinematicBody2D
 const ACCELERATION = 500
 const FRICTION = ACCELERATION
 
-export var horizontal_speed = 50
+export var moving_speed = 50
+export var rolling_speed = 80
 
 enum State { Move, Attack, Roll }
 
-var velocity = Vector2.ZERO
 var state = State.Move
+var velocity = Vector2.ZERO
+var roll_vector = Vector2.DOWN
 
 onready var animation_player = $AnimationPlayer
 onready var animation_tree = $AnimationTree
@@ -25,7 +27,7 @@ func _process(delta):
 			attack_state(delta)
 		State.Roll:
 			roll_state(delta)
-	
+
 func move_state(delta):
 	var input = Vector2.ZERO
 	input.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
@@ -34,29 +36,48 @@ func move_state(delta):
 	
 	if input != Vector2.ZERO:
 		set_animation_position(input)
-
 		animation_state.travel("Run")
 
-		velocity = velocity.move_toward(input * horizontal_speed, ACCELERATION * delta)
+		velocity = velocity.move_toward(input * rolling_speed, ACCELERATION * delta)
 	else:
 		animation_state.travel("Idle")
+
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
+
+	move()
 	
-	velocity = move_and_slide(velocity, Vector2.UP)
+	if Input.is_action_just_pressed("roll"):
+		roll_vector = input
+		state = State.Roll
 	
 	if Input.is_action_just_pressed("attack"):
 		state = State.Attack
-	
+
+func move():
+	velocity = move_and_slide(velocity, Vector2.UP)
+
 func set_animation_position(input):
 	animation_tree.set("parameters/Idle/blend_position", input)
+	animation_tree.set("parameters/Roll/blend_position", input)
 	animation_tree.set("parameters/Run/blend_position", input)
 	animation_tree.set("parameters/Attack/blend_position", input)
 
 func attack_state(_delta):
+	velocity = Vector2.ZERO
 	animation_state.travel("Attack")
-	
-func attack_animation_finished():
-	state = State.Move
 
 func roll_state(_delta):
-	pass
+	velocity = roll_vector * rolling_speed
+	animation_state.travel("Roll")
+	
+	move()
+
+func attack_animation_finished():
+	velocity = Vector2.ZERO
+	state = State.Move
+
+func roll_animation_finished():
+	velocity -= velocity / 2
+	state = State.Move
+
+	print(velocity)
