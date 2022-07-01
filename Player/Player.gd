@@ -52,11 +52,11 @@ func set_animation_position(input):
 	animation_tree.set("parameters/Run/blend_position", input)
 	animation_tree.set("parameters/Attack/blend_position", input)
 
-func attack_state(delta):
+func attack_state(_delta):
 	animation_state.travel("Attack")
 	
 func attack_animation_finished():
 	state = State.Move
 
-func roll_state(delta):
+func roll_state(_delta):
 	pass
