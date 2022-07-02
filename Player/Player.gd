@@ -1,15 +1,15 @@
 extends KinematicBody2D
 
-const ACCELERATION = 500
-const FRICTION = ACCELERATION
+const ACCELERATION := 500
+const FRICTION := ACCELERATION
 
-export var moving_speed = 50
-export var rolling_speed = 80
+export var moving_speed := 50
+export var rolling_speed := 80
 
 enum State { Move, Attack, Roll }
 
 var state = State.Move
-var velocity = Vector2.ZERO
+var velocity := Vector2.ZERO
 var roll_vector = Vector2.DOWN
 
 onready var animation_player = $AnimationPlayer
