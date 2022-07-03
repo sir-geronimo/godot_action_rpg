@@ -31,7 +31,7 @@ animations = [ {
 "frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ) ],
 "loop": true,
 "name": "Fly",
-"speed": 10.0
+"speed": 12.0
 } ]
 
 [sub_resource type="CircleShape2D" id=7]
@@ -52,7 +52,7 @@ max_health = 3
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = SubResource( 6 )
 animation = "Fly"
-frame = 1
+frame = 0
 playing = true
 offset = Vector2( 0, -12 )
 
