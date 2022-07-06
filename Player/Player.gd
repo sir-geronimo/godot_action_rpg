@@ -9,15 +9,18 @@ export var rolling_speed := 85
 onready var animation_player = $AnimationPlayer
 onready var animation_tree = $AnimationTree
 onready var sword_hitbox = $SwordPivot/HitBox
+onready var hurtbox = $HurtBox
 onready var animation_state = animation_tree.get("parameters/playback")
 
 enum State { Move, Attack, Roll }
 
+var stats = PlayerStats
 var state = State.Move
 var velocity := Vector2.ZERO
 var roll_vector = Vector2.DOWN
 
 func _ready():
+	stats.connect("no_health", self, "queue_free")
 	animation_tree.active = true
 	sword_hitbox.attack_vector = Vector2.DOWN
 
@@ -29,6 +32,15 @@ func _process(delta):
 			attack_state(delta)
 		State.Roll:
 			roll_state(delta)
+
+func set_animation_position(input):
+	animation_tree.set("parameters/Idle/blend_position", input)
+	animation_tree.set("parameters/Roll/blend_position", input)
+	animation_tree.set("parameters/Run/blend_position", input)
+	animation_tree.set("parameters/Attack/blend_position", input)
+
+func move():
+	velocity = move_and_slide(velocity, Vector2.UP)
 
 func move_state(delta):
 	var input = Vector2.ZERO
@@ -56,15 +68,6 @@ func move_state(delta):
 	if Input.is_action_just_pressed("attack"):
 		state = State.Attack
 
-func move():
-	velocity = move_and_slide(velocity, Vector2.UP)
-
-func set_animation_position(input):
-	animation_tree.set("parameters/Idle/blend_position", input)
-	animation_tree.set("parameters/Roll/blend_position", input)
-	animation_tree.set("parameters/Run/blend_position", input)
-	animation_tree.set("parameters/Attack/blend_position", input)
-
 func attack_state(_delta):
 	velocity = Vector2.ZERO
 	animation_state.travel("Attack")
@@ -82,3 +85,9 @@ func attack_animation_finished():
 func roll_animation_finished():
 	velocity -= velocity / 2
 	state = State.Move
+
+func _on_HurtBox_area_entered(area):
+	if !hurtbox.invincible:
+		stats.health -= area.damage
+		hurtbox.start_invincibility(0.5)
+		hurtbox.create_hit_effect()

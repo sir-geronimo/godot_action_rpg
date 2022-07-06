@@ -7,9 +7,10 @@ const FRICTION := ACCELERATION
 export (float) var speed := 30
 export var knockback_strength := 100
 
-onready var animated_sprite = $AnimatedSprite
 onready var stats := $Stats
+onready var animated_sprite = $AnimatedSprite
 onready var player_detection_zone = $PlayerDetectionZone
+onready var hurtbox = $HurtBox
 
 enum State { Idle, Wander, Chase }
 
@@ -53,15 +54,18 @@ func chase_state(delta):
 
 	velocity = velocity.move_toward(player_direction * speed, ACCELERATION * delta)
 
-
-func _on_HurtBox_area_entered(area):
-	stats.health -= area.damage
-	knockback = area.attack_vector * knockback_strength
-
-func _on_Stats_no_health():
-	queue_free()
-	
+func play_death_animation():	
 	var enemy_death_effect = EnemyDeathEffect.instance()
 	enemy_death_effect.global_position = global_position
 	
 	get_parent().add_child(enemy_death_effect)
+
+func _on_HurtBox_area_entered(area):
+	stats.health -= area.damage
+	knockback = area.attack_vector * knockback_strength
+	hurtbox.create_hit_effect()
+
+func _on_Stats_no_health():
+	queue_free()
+
+	play_death_animation()
