@@ -11,6 +11,7 @@ onready var stats := $Stats
 onready var animated_sprite = $AnimatedSprite
 onready var player_detection_zone = $PlayerDetectionZone
 onready var hurtbox = $HurtBox
+onready var softCollision = $SoftCollision
 
 enum State { Idle, Wander, Chase }
 
@@ -31,6 +32,10 @@ func _physics_process(delta):
 	knockback = move_and_slide(knockback)
 	
 	animated_sprite.flip_h = velocity.x < 0
+	
+	if softCollision.is_colliding:
+		velocity += softCollision.get_push_vector() * speed * delta
+	
 	velocity = move_and_slide(velocity)
 
 func seek_player():
