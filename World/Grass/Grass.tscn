@@ -16,9 +16,9 @@ centered = false
 offset = Vector2( -8, -8 )
 
 [node name="HurtBox" parent="Grass" instance=ExtResource( 3 )]
+visible = false
 collision_layer = 1
 collision_mask = 1
-show_hit = false
 
 [node name="CollisionPolygon2D" parent="Grass/HurtBox" index="0"]
 position = Vector2( 8, 8 )

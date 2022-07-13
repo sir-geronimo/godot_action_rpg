@@ -11,7 +11,8 @@ onready var stats := $Stats
 onready var animated_sprite = $AnimatedSprite
 onready var player_detection_zone = $PlayerDetectionZone
 onready var hurtbox = $HurtBox
-onready var softCollision = $SoftCollision
+onready var soft_collision = $SoftCollision
+onready var wander_controller := $WanderController
 
 enum State { Idle, Wander, Chase }
 
@@ -33,8 +34,8 @@ func _physics_process(delta):
 	
 	animated_sprite.flip_h = velocity.x < 0
 	
-	if softCollision.is_colliding:
-		velocity += softCollision.get_push_vector() * speed * delta
+	if soft_collision.is_colliding:
+		velocity += soft_collision.get_push_vector() * speed * delta
 	
 	velocity = move_and_slide(velocity)
 
@@ -43,11 +44,24 @@ func seek_player():
 		state = State.Chase
 
 func idle_state(delta):
-	velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 	seek_player()
+	velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
-func wander_state(_delta):
-	pass
+	if wander_controller.get_time_left() == 0:
+		pick_random_state()
+
+func wander_state(delta):
+	seek_player()
+	var direction = global_position.direction_to(wander_controller.target_position)
+	velocity = velocity.move_toward(direction * speed, ACCELERATION * delta)
+	
+	if wander_controller.get_time_left() == 0 or global_position.distance_to(wander_controller.target_position) <= 5:
+		pick_random_state()
+		
+func pick_random_state():
+	var rand_state = rand_range(0, 2)
+	state = [State.Idle, State.Wander][rand_state]
+	wander_controller.start_wander_time(rand_range(1, 3))
 
 func chase_state(delta):
 	var player = player_detection_zone.player
@@ -55,7 +69,7 @@ func chase_state(delta):
 		state = State.Idle
 		return
 
-	var player_direction = (player.global_position - global_position).normalized()
+	var player_direction = global_position.direction_to(player.global_position)
 
 	velocity = velocity.move_toward(player_direction * speed, ACCELERATION * delta)
 

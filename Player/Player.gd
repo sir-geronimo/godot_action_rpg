@@ -10,6 +10,7 @@ onready var animation_player = $AnimationPlayer
 onready var animation_tree = $AnimationTree
 onready var sword_hitbox = $SwordPivot/HitBox
 onready var hurtbox = $HurtBox
+onready var blink_animation_player := $BlinkAnimationPlayer
 onready var animation_state = animation_tree.get("parameters/playback")
 
 enum State { Move, Attack, Roll }
@@ -20,6 +21,7 @@ var velocity := Vector2.ZERO
 var roll_vector = Vector2.DOWN
 
 func _ready():
+	randomize()
 	stats.connect("no_health", self, "queue_free")
 	animation_tree.active = true
 	sword_hitbox.attack_vector = Vector2.DOWN
@@ -89,5 +91,11 @@ func roll_animation_finished():
 func _on_HurtBox_area_entered(area):
 	if !hurtbox.invincible:
 		stats.health -= area.damage
-		hurtbox.start_invincibility(0.5)
+		hurtbox.start_invincibility(0.8)
 		hurtbox.create_hit_effect()
+
+func _on_HurtBox_start_invincibility():
+		blink_animation_player.play("Start")
+
+func _on_HurtBox_stop_invincibility():
+	blink_animation_player.play("Stop")
