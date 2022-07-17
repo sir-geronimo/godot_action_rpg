@@ -13,6 +13,7 @@ onready var player_detection_zone = $PlayerDetectionZone
 onready var hurtbox = $HurtBox
 onready var soft_collision = $SoftCollision
 onready var wander_controller := $WanderController
+onready var animation_player := $AnimationPlayer
 
 enum State { Idle, Wander, Chase }
 
@@ -83,8 +84,17 @@ func _on_HurtBox_area_entered(area):
 	stats.health -= area.damage
 	knockback = area.attack_vector * knockback_strength
 	hurtbox.create_hit_effect()
+	hurtbox.start_invincibility(0.4)
 
 func _on_Stats_no_health():
 	queue_free()
 
 	play_death_animation()
+
+
+func _on_HurtBox_start_invincibility():
+	animation_player.play("Start")
+
+
+func _on_HurtBox_stop_invincibility():
+	animation_player.play("Stop")

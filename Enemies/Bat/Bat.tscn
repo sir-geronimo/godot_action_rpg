@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://Enemies/Bat/Bat.png" type="Texture" id=1]
 [ext_resource path="res://Shadows/SmallShadow.png" type="Texture" id=2]
@@ -9,6 +9,55 @@
 [ext_resource path="res://Overlap/HitBox/HitBox.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Overlap/SoftCollision/SoftCollision.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Enemies/WanderController/WanderController.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Shaders/White.tres" type="Material" id=10]
+
+[sub_resource type="Animation" id=15]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("AnimatedSprite:material:shader_param/active")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=12]
+resource_name = "Start"
+length = 0.2
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("AnimatedSprite:material:shader_param/active")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+
+[sub_resource type="Animation" id=13]
+resource_name = "Stop"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("AnimatedSprite:material:shader_param/active")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 1 )
@@ -62,10 +111,18 @@ speed = 35.0
 [node name="Stats" parent="." instance=ExtResource( 5 )]
 max_health = 2.0
 
+[node name="WanderController" parent="." instance=ExtResource( 9 )]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 15 )
+anims/Start = SubResource( 12 )
+anims/Stop = SubResource( 13 )
+
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+material = ExtResource( 10 )
 frames = SubResource( 6 )
 animation = "Fly"
-frame = 1
+frame = 3
 playing = true
 offset = Vector2( 0, -12 )
 
@@ -105,10 +162,10 @@ visible = false
 [node name="CollisionShape2D" parent="SoftCollision" index="0"]
 shape = SubResource( 11 )
 
-[node name="WanderController" parent="." instance=ExtResource( 9 )]
-
 [connection signal="no_health" from="Stats" to="." method="_on_Stats_no_health"]
 [connection signal="area_entered" from="HurtBox" to="." method="_on_HurtBox_area_entered"]
+[connection signal="start_invincibility" from="HurtBox" to="." method="_on_HurtBox_start_invincibility"]
+[connection signal="stop_invincibility" from="HurtBox" to="." method="_on_HurtBox_stop_invincibility"]
 
 [editable path="PlayerDetectionZone"]
 [editable path="HurtBox"]

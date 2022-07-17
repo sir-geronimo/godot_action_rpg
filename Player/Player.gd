@@ -31,9 +31,9 @@ func _process(delta):
 		State.Move:
 			move_state(delta)
 		State.Attack:
-			attack_state(delta)
+			attack_state()
 		State.Roll:
-			roll_state(delta)
+			roll_state()
 
 func set_animation_position(input):
 	animation_tree.set("parameters/Idle/blend_position", input)
@@ -70,11 +70,11 @@ func move_state(delta):
 	if Input.is_action_just_pressed("attack"):
 		state = State.Attack
 
-func attack_state(_delta):
+func attack_state():
 	velocity = Vector2.ZERO
 	animation_state.travel("Attack")
 
-func roll_state(_delta):
+func roll_state():
 	velocity = roll_vector * rolling_speed
 	animation_state.travel("Roll")
 	
@@ -88,14 +88,14 @@ func roll_animation_finished():
 	velocity -= velocity / 2
 	state = State.Move
 
-func _on_HurtBox_area_entered(area):
+func _on_HurtBox_area_entered(area: Area2D):
 	if !hurtbox.invincible:
 		stats.health -= area.damage
 		hurtbox.start_invincibility(0.8)
 		hurtbox.create_hit_effect()
 
 func _on_HurtBox_start_invincibility():
-		blink_animation_player.play("Start")
+	blink_animation_player.play("Start")
 
 func _on_HurtBox_stop_invincibility():
 	blink_animation_player.play("Stop")
